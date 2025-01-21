@@ -120,7 +120,7 @@ Each role gets a different view (dashboard) and permissions.
 
 ### G. UI Components
 1. **Layout**  
-   - [ ] **TopBar**: Tab view for tickets (draggable tabs, plus “+” button to open new tab).  
+   - [ ] **Header**: Tab view for tickets (draggable tabs, plus “+” button to open new tab).  
    - [ ] **SideBar**: Common navigation for each role’s main sections.  
    - [ ] **Dashboard**: One or multiple pages for admin, agent, and customer.  
    - [ ] **Chat**: A chat widget that appears (right-aligned), possibly toggleable.  
