@@ -5,7 +5,7 @@ A modern customer support platform built with Next.js and Supabase.
 ## Features
 
 - **Modern Tech Stack**
-  - Next.js 14 (App Router)
+  - Next.js 15 (App Router)
   - Supabase for auth, database, and real-time updates
   - TypeScript
   - Tailwind CSS with shadcn/ui components
