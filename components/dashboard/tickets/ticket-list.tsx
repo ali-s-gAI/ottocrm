@@ -11,8 +11,8 @@ type Ticket = {
   status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
   priority: 'HIGH' | 'MEDIUM' | 'LOW';
   created_at: string;
-  created_by: { full_name: string };
-  assigned_to: { full_name: string } | null;
+  created_by_profile: { full_name: string } | null;
+  assigned_to_profile: { full_name: string } | null;
 };
 
 export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
@@ -36,8 +36,8 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
             .from('tickets')
             .select(`
               *,
-              created_by:user_profiles!created_by(full_name),
-              assigned_to:user_profiles!assigned_to(full_name)
+              created_by_profile:user_profiles!created_by(full_name),
+              assigned_to_profile:user_profiles!assigned_to(full_name)
             `)
             .order('created_at', { ascending: false });
           
@@ -78,9 +78,9 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
               <td className="py-4 px-4">
                 <PriorityBadge priority={ticket.priority} />
               </td>
-              <td className="py-4 px-4 text-gray-300">{ticket.created_by.full_name}</td>
+              <td className="py-4 px-4 text-gray-300">{ticket.created_by_profile?.full_name || 'Unknown'}</td>
               <td className="py-4 px-4 text-gray-300">
-                {ticket.assigned_to?.full_name || '-'}
+                {ticket.assigned_to_profile?.full_name || '-'}
               </td>
               <td className="py-4 px-4 text-gray-400 text-sm">
                 {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}

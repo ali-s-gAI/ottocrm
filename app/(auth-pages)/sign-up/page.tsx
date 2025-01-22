@@ -5,11 +5,13 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { FormMessage } from "@/components/form-message";
 
-export default function SignUpPage({
-  searchParams,
-}: {
-  searchParams: { message: string; type: string };
-}) {
+interface PageProps {
+  searchParams: Promise<{ message?: string; type?: string }>;
+}
+
+export default async function SignUpPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
   return (
     <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
       <form
@@ -50,7 +52,7 @@ export default function SignUpPage({
           </select>
         </div>
         <Button>Sign Up</Button>
-        <FormMessage message={searchParams.message} type={searchParams.type} />
+        <FormMessage message={params.message} type={params.type} />
         <p className="text-sm text-center">
           Already have an account?{" "}
           <Link href="/sign-in" className="text-foreground hover:underline">
