@@ -1,8 +1,10 @@
+export type Message = string | null;
+
 export function FormMessage({
   message,
   type,
 }: {
-  message?: string;
+  message?: Message;
   type?: string;
 }) {
   if (!message) return null;
