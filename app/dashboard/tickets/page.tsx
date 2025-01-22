@@ -11,8 +11,8 @@ export default async function TicketsPage() {
     .from('tickets')
     .select(`
       *,
-      created_by:user_profiles!created_by(full_name),
-      assigned_to:user_profiles!assigned_to(full_name)
+      created_by_profile:user_profiles!created_by(full_name),
+      assigned_to_profile:user_profiles!assigned_to(full_name)
     `)
     .order('created_at', { ascending: false });
 

@@ -103,7 +103,7 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
 function StatusBadge({ status }: { status: Ticket['status'] }) {
   const colors = {
     OPEN: 'bg-blue-500/10 text-blue-500',
-    IN_PROGRESS: 'bg-yellow-500/10 text-yellow-500',
+    IN_PROGRESS: 'bg-purple-500/10 text-purple-500',
     RESOLVED: 'bg-green-500/10 text-green-500',
     CLOSED: 'bg-gray-500/10 text-gray-500'
   };
@@ -118,8 +118,8 @@ function StatusBadge({ status }: { status: Ticket['status'] }) {
 function PriorityBadge({ priority }: { priority: Ticket['priority'] }) {
   const colors = {
     HIGH: 'bg-red-500/10 text-red-500',
-    MEDIUM: 'bg-yellow-500/10 text-yellow-500',
-    LOW: 'bg-green-500/10 text-green-500'
+    MEDIUM: 'bg-orange-500/10 text-orange-500',
+    LOW: 'bg-yellow-500/10 text-yellow-500'
   };
 
   return (
