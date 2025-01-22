@@ -7,14 +7,30 @@ import Link from "next/link";
 export default async function TicketsPage() {
   const supabase = await createClient();
 
-  const { data: tickets } = await supabase
+  const { data: tickets, error } = await supabase
     .from('tickets')
     .select(`
-      *,
-      created_by_profile:user_profiles!created_by(full_name),
-      assigned_to_profile:user_profiles!assigned_to(full_name)
+      id,
+      title,
+      description,
+      status,
+      priority,
+      created_at,
+      created_by,
+      assigned_to,
+      created_by_profile:user_profiles!tickets_created_by_fkey(full_name),
+      assigned_to_profile:user_profiles!tickets_assigned_to_fkey(full_name)
     `)
     .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching tickets:', {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code
+    });
+  }
 
   return (
     <div className="space-y-6">

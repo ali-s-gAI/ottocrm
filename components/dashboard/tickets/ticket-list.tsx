@@ -36,8 +36,8 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
             .from('tickets')
             .select(`
               *,
-              created_by_profile:user_profiles!created_by(full_name),
-              assigned_to_profile:user_profiles!assigned_to(full_name)
+              created_by_profile:user_profiles!tickets_created_by_fkey(full_name),
+              assigned_to_profile:user_profiles!tickets_assigned_to_fkey(full_name)
             `)
             .order('created_at', { ascending: false });
           
