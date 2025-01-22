@@ -1,51 +1,63 @@
 import { signUpAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { SmtpMessage } from "../smtp-message";
+import { FormMessage } from "@/components/form-message";
 
-export default async function Signup(props: {
-  searchParams: Promise<Message>;
+export default function SignUpPage({
+  searchParams,
+}: {
+  searchParams: { message: string; type: string };
 }) {
-  const searchParams = await props.searchParams;
-  if ("message" in searchParams) {
-    return (
-      <div className="w-full flex-1 flex items-center h-screen sm:max-w-md justify-center gap-2 p-4">
-        <FormMessage message={searchParams} />
-      </div>
-    );
-  }
-
   return (
-    <>
-      <form className="flex flex-col min-w-64 max-w-64 mx-auto">
-        <h1 className="text-2xl font-medium">Sign up</h1>
-        <p className="text-sm text text-foreground">
-          Already have an account?{" "}
-          <Link className="text-primary font-medium underline" href="/sign-in">
-            Sign in
-          </Link>
-        </p>
-        <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
+    <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
+      <form
+        className="animate-in flex-1 flex flex-col w-full justify-center gap-6 text-foreground"
+        action={signUpAction}
+      >
+        <div className="flex flex-col gap-2">
           <Label htmlFor="email">Email</Label>
-          <Input name="email" placeholder="you@example.com" required />
-          <Label htmlFor="password">Password</Label>
           <Input
-            type="password"
-            name="password"
-            placeholder="Your password"
-            minLength={6}
+            id="email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
             required
           />
-          <SubmitButton formAction={signUpAction} pendingText="Signing up...">
-            Sign up
-          </SubmitButton>
-          <FormMessage message={searchParams} />
         </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            required
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="role">Role</Label>
+          <select
+            id="role"
+            name="role"
+            className="rounded-md px-4 py-2 bg-inherit border"
+            required
+          >
+            <option value="CUSTOMER">Customer</option>
+            <option value="AGENT">Agent</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+        </div>
+        <Button>Sign Up</Button>
+        <FormMessage message={searchParams.message} type={searchParams.type} />
+        <p className="text-sm text-center">
+          Already have an account?{" "}
+          <Link href="/sign-in" className="text-foreground hover:underline">
+            Sign In
+          </Link>
+        </p>
       </form>
-      <SmtpMessage />
-    </>
+    </div>
   );
 }

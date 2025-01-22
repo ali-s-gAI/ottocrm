@@ -8,18 +8,19 @@ import { redirect } from "next/navigation";
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
+  const role = formData.get("role")?.toString() as 'ADMIN' | 'AGENT' | 'CUSTOMER';
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
-  if (!email || !password) {
+  if (!email || !password || !role) {
     return encodedRedirect(
       "error",
       "/sign-up",
-      "Email and password are required",
+      "Email, password, and role are required",
     );
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { error: signUpError, data } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -27,16 +28,34 @@ export const signUpAction = async (formData: FormData) => {
     },
   });
 
-  if (error) {
-    console.error(error.code + " " + error.message);
-    return encodedRedirect("error", "/sign-up", error.message);
-  } else {
-    return encodedRedirect(
-      "success",
-      "/sign-up",
-      "Thanks for signing up! Please check your email for a verification link.",
-    );
+  if (signUpError) {
+    console.error(signUpError.code + " " + signUpError.message);
+    return encodedRedirect("error", "/sign-up", signUpError.message);
   }
+
+  // Create user profile
+  if (data.user) {
+    const { error: profileError } = await supabase
+      .from('user_profiles')
+      .insert([
+        {
+          id: data.user.id,
+          role,
+          full_name: email.split('@')[0], // Temporary name from email
+        }
+      ]);
+
+    if (profileError) {
+      console.error("Profile creation error:", profileError);
+      // Continue anyway as the user was created
+    }
+  }
+
+  return encodedRedirect(
+    "success",
+    "/sign-up",
+    "Thanks for signing up! Please check your email for a verification link.",
+  );
 };
 
 export const signInAction = async (formData: FormData) => {
@@ -131,4 +150,43 @@ export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();
   return redirect("/sign-in");
+};
+
+export const syncMissingProfiles = async () => {
+  const supabase = await createClient();
+
+  // Get all users from auth.users
+  const { data: users, error: usersError } = await supabase.auth.admin.listUsers();
+  if (usersError) {
+    console.error('Error fetching users:', usersError);
+    return;
+  }
+
+  // Get existing profiles
+  const { data: existingProfiles } = await supabase
+    .from('user_profiles')
+    .select('id');
+
+  const existingIds = new Set(existingProfiles?.map(p => p.id) || []);
+
+  // Filter users that don't have profiles
+  const usersToSync = users.users.filter(user => !existingIds.has(user.id));
+
+  // Create profiles for users that don't have them
+  for (const user of usersToSync) {
+    const { error: insertError } = await supabase
+      .from('user_profiles')
+      .insert([
+        {
+          id: user.id,
+          role: user.email?.startsWith('admin') ? 'ADMIN' : 
+                user.email?.startsWith('agent') ? 'AGENT' : 'CUSTOMER',
+          full_name: user.email?.split('@')[0] || 'Unknown',
+        }
+      ]);
+
+    if (insertError) {
+      console.error('Error creating profile for user:', user.email, insertError);
+    }
+  }
 };
