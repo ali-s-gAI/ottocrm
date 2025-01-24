@@ -6,6 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { TicketChat } from "@/components/dashboard/tickets/ticket-chat";
 import { AssigneeSelector } from "@/components/dashboard/tickets/assignee-selector";
 import { StatusControl } from "@/components/dashboard/tickets/status-control";
+import { PrioritySelector } from "@/components/dashboard/tickets/priority-selector";
 
 export default async function TicketPage({ 
   params 
@@ -114,7 +115,13 @@ export default async function TicketPage({
             {isStaff && (
               <div>
                 <div className="text-sm text-muted-foreground">Priority</div>
-                <div className="font-medium">{ticket.priority}</div>
+                <div className="font-medium">
+                  <PrioritySelector
+                    ticketId={ticket.id}
+                    currentPriority={ticket.priority}
+                    isStaff={isStaff}
+                  />
+                </div>
               </div>
             )}
             <div>

@@ -7,6 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AssigneeSelector } from "./assignee-selector";
+import { PrioritySelector } from "./priority-selector";
 
 type Ticket = {
   id: string;
@@ -24,10 +25,12 @@ type SortOrder = "asc" | "desc";
 
 export function TicketList({ 
   initialTickets,
-  isAdmin = false 
+  isAdmin = false,
+  isAgent = false 
 }: { 
   initialTickets: Ticket[];
   isAdmin?: boolean;
+  isAgent?: boolean;
 }) {
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [sortField, setSortField] = useState<SortField>("created");
@@ -121,6 +124,20 @@ export function TicketList({
     );
   };
 
+  const handlePriorityChange = (ticketId: string, newPriority: 'HIGH' | 'MEDIUM' | 'LOW') => {
+    setTickets(currentTickets => 
+      currentTickets.map(ticket => {
+        if (ticket.id === ticketId) {
+          return {
+            ...ticket,
+            priority: newPriority
+          };
+        }
+        return ticket;
+      })
+    );
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse">
@@ -200,7 +217,12 @@ export function TicketList({
                 <StatusBadge status={ticket.status} />
               </td>
               <td className="py-4 px-4">
-                <PriorityBadge priority={ticket.priority} />
+                <PrioritySelector
+                  ticketId={ticket.id}
+                  currentPriority={ticket.priority}
+                  isStaff={isAdmin || isAgent}
+                  onPriorityChange={(newPriority) => handlePriorityChange(ticket.id, newPriority)}
+                />
               </td>
               <td className="py-4 px-4 text-muted-foreground">
                 {ticket.created_by_profile?.full_name || 'Unknown'}
@@ -209,7 +231,7 @@ export function TicketList({
                 <AssigneeSelector
                   ticketId={ticket.id}
                   currentAssigneeId={ticket.assigned_to}
-                  currentAssigneeName={ticket.assigned_to_profile?.full_name}
+                  currentAssigneeName={ticket.assigned_to_profile?.full_name || null}
                   onAssign={(agentId) => handleAssign(ticket.id, agentId)}
                   isAdmin={isAdmin}
                 />
@@ -243,20 +265,6 @@ function StatusBadge({ status }: { status: Ticket['status'] }) {
   return (
     <Badge className={`${colors[status]} border-0`}>
       {status.replace('_', ' ')}
-    </Badge>
-  );
-}
-
-function PriorityBadge({ priority }: { priority: Ticket['priority'] }) {
-  const colors = {
-    HIGH: 'bg-red-500/10 text-red-500',
-    MEDIUM: 'bg-orange-500/10 text-orange-500',
-    LOW: 'bg-yellow-500/10 text-yellow-500'
-  };
-
-  return (
-    <Badge className={`${colors[priority]} border-0`}>
-      {priority}
     </Badge>
   );
 } 

@@ -16,6 +16,7 @@ export default async function TicketsPage() {
     .single();
 
   const isAdmin = userProfile?.role === 'ADMIN';
+  const isAgent = userProfile?.role === 'AGENT';
 
   const { data: tickets, error } = await supabase
     .from('tickets')
@@ -54,7 +55,11 @@ export default async function TicketsPage() {
         </Link>
       </div>
 
-      <TicketList initialTickets={tickets || []} isAdmin={isAdmin} />
+      <TicketList 
+        initialTickets={tickets || []} 
+        isAdmin={isAdmin}
+        isAgent={isAgent}
+      />
     </div>
   );
 } 
