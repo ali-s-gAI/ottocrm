@@ -1,16 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
@@ -41,12 +35,8 @@ export function AssigneeSelector({
   const [open, setOpen] = useState(false);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const supabase = createClient();
-
-  // Create a map of agent names to IDs for easier lookup
-  const agentMap = Object.fromEntries(
-    agents.map(agent => [agent.full_name.toLowerCase(), agent.id])
-  );
 
   useEffect(() => {
     async function fetchAgents() {
@@ -83,6 +73,10 @@ export function AssigneeSelector({
     setOpen(false);
   };
 
+  const filteredAgents = agents.filter(agent =>
+    agent.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (!isAdmin) {
     return (
       <span className="text-muted-foreground">
@@ -105,32 +99,42 @@ export function AssigneeSelector({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput placeholder="Search agents..." />
-          <CommandEmpty>No agent found.</CommandEmpty>
-          <CommandGroup>
-            {agents.map((agent) => (
-              <CommandItem
-                key={agent.id}
-                value={agent.full_name}
-                onSelect={(currentValue) => {
-                  const selectedId = agentMap[currentValue.toLowerCase()];
-                  if (selectedId) handleSelect(selectedId);
-                }}
-                className="w-full select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-default"
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    currentAssigneeId === agent.id ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {agent.full_name}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
+      <PopoverContent className="w-[200px] p-2">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 border rounded-md px-2">
+            <Search className="h-4 w-4 opacity-50" />
+            <Input
+              placeholder="Search agents..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-8 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0"
+            />
+          </div>
+          <div className="max-h-[300px] overflow-auto">
+            {filteredAgents.length === 0 ? (
+              <div className="text-sm text-muted-foreground py-2 text-center">
+                No agents found
+              </div>
+            ) : (
+              filteredAgents.map((agent) => (
+                <Button
+                  key={agent.id}
+                  variant="ghost"
+                  className="w-full justify-start gap-2 font-normal"
+                  onClick={() => handleSelect(agent.id)}
+                >
+                  <Check
+                    className={cn(
+                      "h-4 w-4",
+                      currentAssigneeId === agent.id ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {agent.full_name}
+                </Button>
+              ))
+            )}
+          </div>
+        </div>
       </PopoverContent>
     </Popover>
   );
