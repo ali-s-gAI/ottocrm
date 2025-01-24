@@ -57,7 +57,11 @@ export function TicketChat({ ticketId, currentUser, userRole }: TicketChatProps)
     const { data, error } = await supabase
       .from('ticket_messages')
       .select(`
-        *,
+        id,
+        message_text,
+        created_at,
+        sender_id,
+        is_internal,
         user_profile:user_profiles!sender_id(full_name)
       `)
       .eq('ticket_id', ticketId)
@@ -68,7 +72,14 @@ export function TicketChat({ ticketId, currentUser, userRole }: TicketChatProps)
       return;
     }
 
-    setMessages(data || []);
+    const transformedData = data?.map(message => ({
+      ...message,
+      user_profile: Array.isArray(message.user_profile) && message.user_profile[0] 
+        ? { full_name: message.user_profile[0].full_name }
+        : { full_name: 'Unknown User' }
+    }));
+
+    setMessages(transformedData || []);
   }
 
   async function sendMessage(e: React.FormEvent) {
@@ -110,7 +121,6 @@ export function TicketChat({ ticketId, currentUser, userRole }: TicketChatProps)
             >
               <div className="text-sm font-medium mb-1">
                 {message.user_profile?.full_name}
-                {message.is_internal && ' (Internal)'}
               </div>
               <div className="break-words">{message.message_text}</div>
               <div className="text-xs mt-1 opacity-70">
