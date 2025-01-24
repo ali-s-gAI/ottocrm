@@ -44,6 +44,8 @@ export function TicketList({
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const supabase = createClient();
 
+  const isStaff = isAdmin || isAgent;
+
   // Apply filters whenever tickets or filter values change
   useEffect(() => {
     let filtered = [...tickets];
@@ -199,15 +201,17 @@ export function TicketList({
                 Status {getSortIcon("status")}
               </Button>
             </th>
-            <th className="pb-4 px-4">
-              <Button
-                variant="ghost"
-                onClick={() => sortTickets("priority")}
-                className="h-8 text-left font-medium text-muted-foreground"
-              >
-                Priority {getSortIcon("priority")}
-              </Button>
-            </th>
+            {isStaff && (
+              <th className="pb-4 px-4">
+                <Button
+                  variant="ghost"
+                  onClick={() => sortTickets("priority")}
+                  className="h-8 text-left font-medium text-muted-foreground"
+                >
+                  Priority {getSortIcon("priority")}
+                </Button>
+              </th>
+            )}
             <th className="pb-4 px-4">
               <Button
                 variant="ghost"
@@ -217,15 +221,17 @@ export function TicketList({
                 Created By {getSortIcon("creator")}
               </Button>
             </th>
-            <th className="pb-4 px-4">
-              <Button
-                variant="ghost"
-                onClick={() => sortTickets("assignee")}
-                className="h-8 text-left font-medium text-muted-foreground"
-              >
-                Assigned To {getSortIcon("assignee")}
-              </Button>
-            </th>
+            {isStaff && (
+              <th className="pb-4 px-4">
+                <Button
+                  variant="ghost"
+                  onClick={() => sortTickets("assignee")}
+                  className="h-8 text-left font-medium text-muted-foreground"
+                >
+                  Assigned To {getSortIcon("assignee")}
+                </Button>
+              </th>
+            )}
             <th className="pb-4 px-4">
               <Button
                 variant="ghost"
@@ -254,26 +260,30 @@ export function TicketList({
               <td className="py-4 px-4">
                 <StatusBadge status={ticket.status} />
               </td>
-              <td className="py-4 px-4">
-                <PrioritySelector
-                  ticketId={ticket.id}
-                  currentPriority={ticket.priority}
-                  isStaff={isAdmin || isAgent}
-                  onPriorityChange={(newPriority) => handlePriorityChange(ticket.id, newPriority)}
-                />
-              </td>
+              {isStaff && (
+                <td className="py-4 px-4">
+                  <PrioritySelector
+                    ticketId={ticket.id}
+                    currentPriority={ticket.priority}
+                    isStaff={isStaff}
+                    onPriorityChange={(newPriority) => handlePriorityChange(ticket.id, newPriority)}
+                  />
+                </td>
+              )}
               <td className="py-4 px-4 text-muted-foreground">
                 {ticket.created_by_profile?.full_name || 'Unknown'}
               </td>
-              <td className="py-4 px-4">
-                <AssigneeSelector
-                  ticketId={ticket.id}
-                  currentAssigneeId={ticket.assigned_to}
-                  currentAssigneeName={ticket.assigned_to_profile?.full_name || null}
-                  onAssign={(agentId) => handleAssign(ticket.id, agentId)}
-                  isAdmin={isAdmin}
-                />
-              </td>
+              {isStaff && (
+                <td className="py-4 px-4">
+                  <AssigneeSelector
+                    ticketId={ticket.id}
+                    currentAssigneeId={ticket.assigned_to}
+                    currentAssigneeName={ticket.assigned_to_profile?.full_name || null}
+                    onAssign={(agentId) => handleAssign(ticket.id, agentId)}
+                    isAdmin={isAdmin}
+                  />
+                </td>
+              )}
               <td className="py-4 px-4 text-muted-foreground text-sm">
                 {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}
               </td>
@@ -281,7 +291,7 @@ export function TicketList({
           ))}
           {filteredTickets.length === 0 && (
             <tr>
-              <td colSpan={6} className="py-8 text-center text-muted-foreground">
+              <td colSpan={isStaff ? 6 : 4} className="py-8 text-center text-muted-foreground">
                 No tickets found
               </td>
             </tr>
