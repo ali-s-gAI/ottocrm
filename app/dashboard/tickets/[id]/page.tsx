@@ -92,6 +92,7 @@ export default async function TicketPage({
   }
 
   const isAdmin = userProfile?.role === 'ADMIN';
+  const isStaff = userProfile?.role === 'ADMIN' || userProfile?.role === 'AGENT';
 
   return (
     <div className="space-y-6">
@@ -110,10 +111,12 @@ export default async function TicketPage({
             <CardTitle>Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <div className="text-sm text-muted-foreground">Priority</div>
-              <div className="font-medium">{ticket.priority}</div>
-            </div>
+            {isStaff && (
+              <div>
+                <div className="text-sm text-muted-foreground">Priority</div>
+                <div className="font-medium">{ticket.priority}</div>
+              </div>
+            )}
             <div>
               <div className="text-sm text-muted-foreground">Created By</div>
               <div className="font-medium">

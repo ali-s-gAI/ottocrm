@@ -25,6 +25,7 @@ export function NewTicketForm({ agents }: { agents: Agent[] }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isAgent, setIsAgent] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [selectedPriority, setSelectedPriority] = useState<'HIGH' | 'MEDIUM' | 'LOW'>('MEDIUM');
   const supabase = createClient();
@@ -47,6 +48,7 @@ export function NewTicketForm({ agents }: { agents: Agent[] }) {
           .single();
         
         setIsAdmin(profile?.role === 'ADMIN');
+        setIsAgent(profile?.role === 'AGENT');
       }
     }
     checkUserRole();
@@ -67,7 +69,7 @@ export function NewTicketForm({ agents }: { agents: Agent[] }) {
         {
           title,
           description,
-          priority: selectedPriority,
+          priority: isAdmin || isAgent ? selectedPriority : 'MEDIUM', // Default to MEDIUM for customers
           assigned_to: isAdmin ? (assignedTo || null) : null,
           status: 'OPEN',
           created_by: userId
@@ -108,40 +110,42 @@ export function NewTicketForm({ agents }: { agents: Agent[] }) {
         />
       </div>
 
-      <div className="space-y-2">
-        <Label>Priority</Label>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              className={`w-full justify-between bg-[#242424] border-[#333333] ${priorityColors[selectedPriority]}`}
-            >
-              {selectedPriority}
-              <ChevronDown className="h-4 w-4 opacity-50" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-full min-w-[8rem] bg-[#242424] border-[#333333]">
-            <DropdownMenuItem 
-              onClick={() => setSelectedPriority('LOW')}
-              className={`${priorityColors.LOW} focus:text-yellow-500 focus:bg-yellow-500/10`}
-            >
-              LOW
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => setSelectedPriority('MEDIUM')}
-              className={`${priorityColors.MEDIUM} focus:text-orange-500 focus:bg-orange-500/10`}
-            >
-              MEDIUM
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => setSelectedPriority('HIGH')}
-              className={`${priorityColors.HIGH} focus:text-red-500 focus:bg-red-500/10`}
-            >
-              HIGH
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      {(isAdmin || isAgent) && (
+        <div className="space-y-2">
+          <Label>Priority</Label>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className={`w-full justify-between bg-[#242424] border-[#333333] ${priorityColors[selectedPriority]}`}
+              >
+                {selectedPriority}
+                <ChevronDown className="h-4 w-4 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-full min-w-[8rem] bg-[#242424] border-[#333333]">
+              <DropdownMenuItem 
+                onClick={() => setSelectedPriority('LOW')}
+                className={`${priorityColors.LOW} focus:text-yellow-500 focus:bg-yellow-500/10`}
+              >
+                LOW
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => setSelectedPriority('MEDIUM')}
+                className={`${priorityColors.MEDIUM} focus:text-orange-500 focus:bg-orange-500/10`}
+              >
+                MEDIUM
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => setSelectedPriority('HIGH')}
+                className={`${priorityColors.HIGH} focus:text-red-500 focus:bg-red-500/10`}
+              >
+                HIGH
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
 
       {isAdmin && (
         <div className="space-y-2">
