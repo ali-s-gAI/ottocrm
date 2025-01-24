@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 type Ticket = {
   id: string;
@@ -16,9 +17,54 @@ type Ticket = {
   assigned_to_profile: { full_name: string } | null;
 };
 
+type SortField = "title" | "status" | "priority" | "created" | "assignee" | "creator";
+type SortOrder = "asc" | "desc";
+
 export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const [sortField, setSortField] = useState<SortField>("created");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const supabase = createClient();
+
+  const sortTickets = (field: SortField) => {
+    const newOrder = field === sortField && sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newOrder);
+    setSortField(field);
+
+    const sorted = [...tickets].sort((a, b) => {
+      const multiplier = newOrder === "asc" ? 1 : -1;
+      
+      switch (field) {
+        case "title":
+          return multiplier * a.title.localeCompare(b.title);
+        case "status":
+          return multiplier * a.status.localeCompare(b.status);
+        case "priority": {
+          const priorityOrder = { HIGH: 3, MEDIUM: 2, LOW: 1 };
+          return multiplier * (priorityOrder[a.priority] - priorityOrder[b.priority]);
+        }
+        case "created":
+          return multiplier * (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        case "assignee":
+          const aName = a.assigned_to_profile?.full_name || '';
+          const bName = b.assigned_to_profile?.full_name || '';
+          return multiplier * aName.localeCompare(bName);
+        case "creator":
+          const aCreator = a.created_by_profile?.full_name || '';
+          const bCreator = b.created_by_profile?.full_name || '';
+          return multiplier * aCreator.localeCompare(bCreator);
+        default:
+          return 0;
+      }
+    });
+
+    setTickets(sorted);
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return "↕️";
+    return sortOrder === "asc" ? "↑" : "↓";
+  };
 
   useEffect(() => {
     // Set up real-time subscription
@@ -57,12 +103,60 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
       <table className="w-full border-collapse">
         <thead>
           <tr className="text-left text-gray-400 text-sm">
-            <th className="pb-4 px-4">Title</th>
-            <th className="pb-4 px-4">Status</th>
-            <th className="pb-4 px-4">Priority</th>
-            <th className="pb-4 px-4">Created By</th>
-            <th className="pb-4 px-4">Assigned To</th>
-            <th className="pb-4 px-4">Created</th>
+            <th className="pb-4 px-4">
+              <Button
+                variant="ghost"
+                onClick={() => sortTickets("title")}
+                className="h-8 text-left font-medium text-gray-400"
+              >
+                Title {getSortIcon("title")}
+              </Button>
+            </th>
+            <th className="pb-4 px-4">
+              <Button
+                variant="ghost"
+                onClick={() => sortTickets("status")}
+                className="h-8 text-left font-medium text-gray-400"
+              >
+                Status {getSortIcon("status")}
+              </Button>
+            </th>
+            <th className="pb-4 px-4">
+              <Button
+                variant="ghost"
+                onClick={() => sortTickets("priority")}
+                className="h-8 text-left font-medium text-gray-400"
+              >
+                Priority {getSortIcon("priority")}
+              </Button>
+            </th>
+            <th className="pb-4 px-4">
+              <Button
+                variant="ghost"
+                onClick={() => sortTickets("creator")}
+                className="h-8 text-left font-medium text-gray-400"
+              >
+                Created By {getSortIcon("creator")}
+              </Button>
+            </th>
+            <th className="pb-4 px-4">
+              <Button
+                variant="ghost"
+                onClick={() => sortTickets("assignee")}
+                className="h-8 text-left font-medium text-gray-400"
+              >
+                Assigned To {getSortIcon("assignee")}
+              </Button>
+            </th>
+            <th className="pb-4 px-4">
+              <Button
+                variant="ghost"
+                onClick={() => sortTickets("created")}
+                className="h-8 text-left font-medium text-gray-400"
+              >
+                Created {getSortIcon("created")}
+              </Button>
+            </th>
           </tr>
         </thead>
         <tbody>
