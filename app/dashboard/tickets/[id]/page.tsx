@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { TicketChat } from "@/components/dashboard/tickets/ticket-chat";
+import { AssigneeSelector } from "@/components/dashboard/tickets/assignee-selector";
 
 export default async function TicketPage({ 
   params 
@@ -89,10 +90,12 @@ export default async function TicketPage({
     notFound();
   }
 
+  const isAdmin = userProfile?.role === 'ADMIN';
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-white">{ticket.title}</h1>
+        <h1 className="text-2xl font-bold text-foreground">{ticket.title}</h1>
         <Badge 
           variant={ticket.status === 'OPEN' ? 'default' : 'secondary'}
           className="text-sm"
@@ -120,7 +123,12 @@ export default async function TicketPage({
             <div>
               <div className="text-sm text-muted-foreground">Assigned To</div>
               <div className="font-medium">
-                {ticket.assigned_to_profile?.full_name || 'Unassigned'}
+                <AssigneeSelector
+                  ticketId={ticket.id}
+                  currentAssigneeId={ticket.assigned_to}
+                  currentAssigneeName={ticket.assigned_to_profile?.full_name}
+                  isAdmin={isAdmin}
+                />
               </div>
             </div>
             <div>

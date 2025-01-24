@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AssigneeSelector } from "./assignee-selector";
 
 type Ticket = {
   id: string;
@@ -14,13 +15,20 @@ type Ticket = {
   priority: 'HIGH' | 'MEDIUM' | 'LOW';
   created_at: string;
   created_by_profile: { full_name: string } | null;
+  assigned_to: string | null;
   assigned_to_profile: { full_name: string } | null;
 };
 
 type SortField = "title" | "status" | "priority" | "created" | "assignee" | "creator";
 type SortOrder = "asc" | "desc";
 
-export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
+export function TicketList({ 
+  initialTickets,
+  isAdmin = false 
+}: { 
+  initialTickets: Ticket[];
+  isAdmin?: boolean;
+}) {
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [sortField, setSortField] = useState<SortField>("created");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
@@ -97,6 +105,21 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
       supabase.removeChannel(channel);
     };
   }, [supabase]);
+
+  const handleAssign = (ticketId: string, agentId: string | null) => {
+    setTickets(currentTickets => 
+      currentTickets.map(ticket => {
+        if (ticket.id === ticketId) {
+          return {
+            ...ticket,
+            assigned_to: agentId,
+            assigned_to_profile: null // This will be updated by the real-time subscription
+          };
+        }
+        return ticket;
+      })
+    );
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -182,8 +205,14 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
               <td className="py-4 px-4 text-muted-foreground">
                 {ticket.created_by_profile?.full_name || 'Unknown'}
               </td>
-              <td className="py-4 px-4 text-muted-foreground">
-                {ticket.assigned_to_profile?.full_name || '-'}
+              <td className="py-4 px-4">
+                <AssigneeSelector
+                  ticketId={ticket.id}
+                  currentAssigneeId={ticket.assigned_to}
+                  currentAssigneeName={ticket.assigned_to_profile?.full_name}
+                  onAssign={(agentId) => handleAssign(ticket.id, agentId)}
+                  isAdmin={isAdmin}
+                />
               </td>
               <td className="py-4 px-4 text-muted-foreground text-sm">
                 {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}

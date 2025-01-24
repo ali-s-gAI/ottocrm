@@ -7,6 +7,16 @@ import Link from "next/link";
 export default async function TicketsPage() {
   const supabase = await createClient();
 
+  // Get current user's role
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: userProfile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', user?.id)
+    .single();
+
+  const isAdmin = userProfile?.role === 'ADMIN';
+
   const { data: tickets, error } = await supabase
     .from('tickets')
     .select(`
@@ -44,7 +54,7 @@ export default async function TicketsPage() {
         </Link>
       </div>
 
-      <TicketList initialTickets={tickets || []} />
+      <TicketList initialTickets={tickets || []} isAdmin={isAdmin} />
     </div>
   );
 } 
