@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
 type Ticket = {
   id: string;
@@ -69,22 +70,23 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
             <tr
               key={ticket.id}
               className="border-t border-[#333333] hover:bg-[#2A2A2A] cursor-pointer"
-              onClick={() => window.location.href = `/dashboard/tickets/${ticket.id}`}
             >
-              <td className="py-4 px-4 text-white">{ticket.title}</td>
-              <td className="py-4 px-4">
-                <StatusBadge status={ticket.status} />
-              </td>
-              <td className="py-4 px-4">
-                <PriorityBadge priority={ticket.priority} />
-              </td>
-              <td className="py-4 px-4 text-gray-300">{ticket.created_by_profile?.full_name || 'Unknown'}</td>
-              <td className="py-4 px-4 text-gray-300">
-                {ticket.assigned_to_profile?.full_name || '-'}
-              </td>
-              <td className="py-4 px-4 text-gray-400 text-sm">
-                {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}
-              </td>
+              <Link href={`/dashboard/tickets/${ticket.id}`} className="contents">
+                <td className="py-4 px-4 text-white">{ticket.title}</td>
+                <td className="py-4 px-4">
+                  <StatusBadge status={ticket.status} />
+                </td>
+                <td className="py-4 px-4">
+                  <PriorityBadge priority={ticket.priority} />
+                </td>
+                <td className="py-4 px-4 text-gray-300">{ticket.created_by_profile?.full_name || 'Unknown'}</td>
+                <td className="py-4 px-4 text-gray-300">
+                  {ticket.assigned_to_profile?.full_name || '-'}
+                </td>
+                <td className="py-4 px-4 text-gray-400 text-sm">
+                  {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}
+                </td>
+              </Link>
             </tr>
           ))}
           {tickets.length === 0 && (
