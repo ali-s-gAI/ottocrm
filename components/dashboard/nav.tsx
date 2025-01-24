@@ -1,11 +1,21 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Home, Inbox, Users, Settings } from "lucide-react";
 
 export default function DashboardNav() {
   return (
-    <nav className="w-64 bg-[#1C1C1C] text-gray-300 p-4 border-r border-[#333333]">
+    <nav className="w-64 bg-card text-muted-foreground p-4 border-r border-border">
       <div className="mb-8">
-        <h1 className="text-xl font-bold text-white">OttoCRM</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-bold text-foreground">OttoCRM</h1>
+          <Image
+            src="/ottocrm_logo.png"
+            alt="OttoCRM Logo"
+            width={24}
+            height={24}
+            className="rounded-full"
+          />
+        </div>
       </div>
       
       <div className="space-y-2">
@@ -38,7 +48,7 @@ function NavItem({
   return (
     <Link
       href={href}
-      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#333333] transition-colors"
+      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors"
     >
       {icon}
       <span>{children}</span>

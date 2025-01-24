@@ -35,9 +35,9 @@ export default async function TicketsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-white">Tickets</h1>
+        <h1 className="text-2xl font-bold text-foreground">Tickets</h1>
         <Link href="/dashboard/tickets/new">
-          <Button className="bg-[#333333] hover:bg-[#444444]">
+          <Button>
             <Plus className="w-4 h-4 mr-2" />
             New Ticket
           </Button>

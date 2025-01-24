@@ -45,8 +45,8 @@ export default async function CustomersPage() {
     console.error('Error fetching customers:', customersError);
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-white">Customers</h1>
-        <p className="text-red-500">Error loading customers. Please try again later.</p>
+        <h1 className="text-2xl font-bold text-foreground">Customers</h1>
+        <p className="text-destructive">Error loading customers. Please try again later.</p>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default async function CustomersPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-white">Customers</h1>
+      <h1 className="text-2xl font-bold text-foreground">Customers</h1>
       <CustomerList initialCustomers={customersWithCounts} />
     </div>
   );

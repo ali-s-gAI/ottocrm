@@ -44,29 +44,29 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-white">Dashboard Overview</h1>
+      <h1 className="text-2xl font-bold text-foreground">Dashboard Overview</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="p-6 rounded-lg bg-[#1C1C1C] border border-[#333333] hover:border-[#444444] transition-colors"
+            className="p-6 rounded-lg bg-card border border-border hover:border-border/60 transition-colors"
           >
-            <div className="text-sm text-gray-400">{stat.label}</div>
-            <div className="text-2xl font-bold text-white mt-2">{stat.value}</div>
+            <div className="text-sm text-muted-foreground">{stat.label}</div>
+            <div className="text-2xl font-bold text-foreground mt-2">{stat.value}</div>
           </div>
         ))}
       </div>
 
-      <div className="mt-8 p-6 rounded-lg bg-[#1C1C1C] border border-[#333333]">
-        <h2 className="text-lg font-semibold text-white mb-4">Recent Activity</h2>
+      <div className="mt-8 p-6 rounded-lg bg-card border border-border">
+        <h2 className="text-lg font-semibold text-foreground mb-4">Recent Activity</h2>
         {recentTickets && recentTickets.length > 0 ? (
           <div className="space-y-4">
             {recentTickets.map((ticket) => (
-              <div key={ticket.id} className="flex items-center justify-between p-4 rounded-md bg-[#252525] border border-[#333333]">
+              <div key={ticket.id} className="flex items-center justify-between p-4 rounded-md bg-muted border border-border">
                 <div>
-                  <h3 className="font-medium text-white">{ticket.title}</h3>
-                  <p className="text-sm text-gray-400">
+                  <h3 className="font-medium text-foreground">{ticket.title}</h3>
+                  <p className="text-sm text-muted-foreground">
                     Created by {ticket.created_by_profile?.full_name || 'Unknown'} 
                     {ticket.assigned_to_profile && ` • Assigned to ${ticket.assigned_to_profile.full_name}`}
                   </p>
@@ -92,7 +92,7 @@ export default async function DashboardPage() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-400">No recent activity to display.</p>
+          <p className="text-muted-foreground">No recent activity to display.</p>
         )}
       </div>
     </div>

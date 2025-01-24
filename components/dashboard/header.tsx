@@ -6,15 +6,15 @@ import { signOutAction } from "@/app/actions";
 
 export default function DashboardHeader({ user }: { user: User }) {
   return (
-    <header className="h-16 px-6 border-b border-[#333333] bg-[#1C1C1C] flex items-center justify-between">
+    <header className="h-16 px-6 border-b border-border bg-card flex items-center justify-between">
       {/* Search */}
       <div className="flex-1 max-w-2xl">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
           <Input
             type="search"
             placeholder="Search tickets..."
-            className="w-full pl-10 bg-[#242424] border-[#333333] text-gray-300"
+            className="w-full pl-10"
           />
         </div>
       </div>
@@ -24,17 +24,17 @@ export default function DashboardHeader({ user }: { user: User }) {
         <Button
           variant="ghost"
           size="icon"
-          className="text-gray-400 hover:text-white"
+          className="text-muted-foreground hover:text-foreground"
         >
           <Bell size={20} />
         </Button>
         
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-300">{user.email}</span>
+          <span className="text-sm text-muted-foreground">{user.email}</span>
           <form action={signOutAction}>
             <Button 
               variant="ghost" 
-              className="text-gray-400 hover:text-white"
+              className="text-muted-foreground hover:text-foreground"
             >
               Sign out
             </Button>

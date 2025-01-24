@@ -102,12 +102,12 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
     <div className="overflow-x-auto">
       <table className="w-full border-collapse">
         <thead>
-          <tr className="text-left text-gray-400 text-sm">
+          <tr className="text-left text-muted-foreground text-sm">
             <th className="pb-4 px-4">
               <Button
                 variant="ghost"
                 onClick={() => sortTickets("title")}
-                className="h-8 text-left font-medium text-gray-400"
+                className="h-8 text-left font-medium text-muted-foreground"
               >
                 Title {getSortIcon("title")}
               </Button>
@@ -116,7 +116,7 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
               <Button
                 variant="ghost"
                 onClick={() => sortTickets("status")}
-                className="h-8 text-left font-medium text-gray-400"
+                className="h-8 text-left font-medium text-muted-foreground"
               >
                 Status {getSortIcon("status")}
               </Button>
@@ -125,7 +125,7 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
               <Button
                 variant="ghost"
                 onClick={() => sortTickets("priority")}
-                className="h-8 text-left font-medium text-gray-400"
+                className="h-8 text-left font-medium text-muted-foreground"
               >
                 Priority {getSortIcon("priority")}
               </Button>
@@ -134,7 +134,7 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
               <Button
                 variant="ghost"
                 onClick={() => sortTickets("creator")}
-                className="h-8 text-left font-medium text-gray-400"
+                className="h-8 text-left font-medium text-muted-foreground"
               >
                 Created By {getSortIcon("creator")}
               </Button>
@@ -143,7 +143,7 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
               <Button
                 variant="ghost"
                 onClick={() => sortTickets("assignee")}
-                className="h-8 text-left font-medium text-gray-400"
+                className="h-8 text-left font-medium text-muted-foreground"
               >
                 Assigned To {getSortIcon("assignee")}
               </Button>
@@ -152,7 +152,7 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
               <Button
                 variant="ghost"
                 onClick={() => sortTickets("created")}
-                className="h-8 text-left font-medium text-gray-400"
+                className="h-8 text-left font-medium text-muted-foreground"
               >
                 Created {getSortIcon("created")}
               </Button>
@@ -163,12 +163,12 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
           {tickets.map((ticket) => (
             <tr
               key={ticket.id}
-              className="border-t border-[#333333] hover:bg-[#2A2A2A] cursor-pointer"
+              className="border-t border-border hover:bg-muted/50 cursor-pointer"
             >
               <td className="p-0">
                 <Link 
                   href={`/dashboard/tickets/${ticket.id}`}
-                  className="block py-4 px-4 text-white"
+                  className="block py-4 px-4 text-foreground"
                 >
                   {ticket.title}
                 </Link>
@@ -179,20 +179,20 @@ export function TicketList({ initialTickets }: { initialTickets: Ticket[] }) {
               <td className="py-4 px-4">
                 <PriorityBadge priority={ticket.priority} />
               </td>
-              <td className="py-4 px-4 text-gray-300">
+              <td className="py-4 px-4 text-muted-foreground">
                 {ticket.created_by_profile?.full_name || 'Unknown'}
               </td>
-              <td className="py-4 px-4 text-gray-300">
+              <td className="py-4 px-4 text-muted-foreground">
                 {ticket.assigned_to_profile?.full_name || '-'}
               </td>
-              <td className="py-4 px-4 text-gray-400 text-sm">
+              <td className="py-4 px-4 text-muted-foreground text-sm">
                 {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}
               </td>
             </tr>
           ))}
           {tickets.length === 0 && (
             <tr>
-              <td colSpan={6} className="py-8 text-center text-gray-400">
+              <td colSpan={6} className="py-8 text-center text-muted-foreground">
                 No tickets found
               </td>
             </tr>
