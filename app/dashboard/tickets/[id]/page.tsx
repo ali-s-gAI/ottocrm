@@ -8,12 +8,11 @@ import { AssigneeSelector } from "@/components/dashboard/tickets/assignee-select
 import { StatusControl } from "@/components/dashboard/tickets/status-control";
 import { PrioritySelector } from "@/components/dashboard/tickets/priority-selector";
 
-export default async function TicketPage({ 
-  params 
-}: { 
-  params: Promise<{ id: string }> | { id: string }
-}) {
-  // Ensure params is properly awaited
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function TicketPage({ params }: PageProps) {
   const { id } = await params;
   console.log('Debug: Accessing ticket page with ID:', id);
   
