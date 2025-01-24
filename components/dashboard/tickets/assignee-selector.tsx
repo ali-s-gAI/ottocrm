@@ -43,6 +43,11 @@ export function AssigneeSelector({
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
 
+  // Create a map of agent names to IDs for easier lookup
+  const agentMap = Object.fromEntries(
+    agents.map(agent => [agent.full_name.toLowerCase(), agent.id])
+  );
+
   useEffect(() => {
     async function fetchAgents() {
       const { data } = await supabase
@@ -101,15 +106,19 @@ export function AssigneeSelector({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
-        <Command shouldFilter={false}>
+        <Command>
           <CommandInput placeholder="Search agents..." />
           <CommandEmpty>No agent found.</CommandEmpty>
           <CommandGroup>
             {agents.map((agent) => (
               <CommandItem
                 key={agent.id}
-                onSelect={() => handleSelect(agent.id)}
-                className="flex items-center px-2 py-1.5 hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                value={agent.full_name}
+                onSelect={(currentValue) => {
+                  const selectedId = agentMap[currentValue.toLowerCase()];
+                  if (selectedId) handleSelect(selectedId);
+                }}
+                className="w-full select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-default"
               >
                 <Check
                   className={cn(

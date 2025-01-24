@@ -1,8 +1,21 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Home, Inbox, Users, Settings } from "lucide-react";
+import { createClient } from "@/utils/supabase/server";
 
-export default function DashboardNav() {
+export default async function DashboardNav() {
+  const supabase = await createClient();
+  
+  // Get user and role
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', user?.id)
+    .single();
+
+  const isCustomer = profile?.role === 'CUSTOMER';
+
   return (
     <nav className="w-64 bg-card text-muted-foreground p-4 border-r border-border">
       <div className="mb-8">
@@ -25,9 +38,11 @@ export default function DashboardNav() {
         <NavItem href="/dashboard/tickets" icon={<Inbox size={20} />}>
           Tickets
         </NavItem>
-        <NavItem href="/dashboard/customers" icon={<Users size={20} />}>
-          Customers
-        </NavItem>
+        {!isCustomer && (
+          <NavItem href="/dashboard/customers" icon={<Users size={20} />}>
+            Customers
+          </NavItem>
+        )}
         <NavItem href="/dashboard/settings" icon={<Settings size={20} />}>
           Settings
         </NavItem>
