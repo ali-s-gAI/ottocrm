@@ -26,24 +26,53 @@ type SortOrder = "asc" | "desc";
 export function TicketList({ 
   initialTickets,
   isAdmin = false,
-  isAgent = false 
+  isAgent = false,
+  statusFilter = 'ALL',
+  priorityFilter = 'ALL',
+  assigneeFilter = 'ALL'
 }: { 
   initialTickets: Ticket[];
   isAdmin?: boolean;
   isAgent?: boolean;
+  statusFilter?: string;
+  priorityFilter?: string;
+  assigneeFilter?: string;
 }) {
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const [filteredTickets, setFilteredTickets] = useState<Ticket[]>(initialTickets);
   const [sortField, setSortField] = useState<SortField>("created");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const supabase = createClient();
 
-  const sortTickets = (field: SortField) => {
-    const newOrder = field === sortField && sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newOrder);
-    setSortField(field);
+  // Apply filters whenever tickets or filter values change
+  useEffect(() => {
+    let filtered = [...tickets];
 
-    const sorted = [...tickets].sort((a, b) => {
-      const multiplier = newOrder === "asc" ? 1 : -1;
+    if (statusFilter !== 'ALL') {
+      filtered = filtered.filter(ticket => ticket.status === statusFilter);
+    }
+
+    if (priorityFilter !== 'ALL') {
+      filtered = filtered.filter(ticket => ticket.priority === priorityFilter);
+    }
+
+    if (assigneeFilter !== 'ALL') {
+      if (assigneeFilter === 'UNASSIGNED') {
+        filtered = filtered.filter(ticket => !ticket.assigned_to);
+      } else {
+        filtered = filtered.filter(ticket => ticket.assigned_to === assigneeFilter);
+      }
+    }
+
+    // Apply current sort to filtered results
+    const sorted = sortTicketArray(filtered, sortField, sortOrder);
+    setFilteredTickets(sorted);
+  }, [tickets, statusFilter, priorityFilter, assigneeFilter, sortField, sortOrder]);
+
+  // Helper function to sort ticket arrays
+  const sortTicketArray = (ticketsToSort: Ticket[], field: SortField, order: SortOrder) => {
+    return [...ticketsToSort].sort((a, b) => {
+      const multiplier = order === "asc" ? 1 : -1;
       
       switch (field) {
         case "title":
@@ -68,8 +97,12 @@ export function TicketList({
           return 0;
       }
     });
+  };
 
-    setTickets(sorted);
+  const sortTickets = (field: SortField) => {
+    const newOrder = field === sortField && sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newOrder);
+    setSortField(field);
   };
 
   const getSortIcon = (field: SortField) => {
@@ -108,6 +141,11 @@ export function TicketList({
       supabase.removeChannel(channel);
     };
   }, [supabase]);
+
+  // Update tickets when initialTickets changes
+  useEffect(() => {
+    setTickets(initialTickets);
+  }, [initialTickets]);
 
   const handleAssign = (ticketId: string, agentId: string | null) => {
     setTickets(currentTickets => 
@@ -200,7 +238,7 @@ export function TicketList({
           </tr>
         </thead>
         <tbody>
-          {tickets.map((ticket) => (
+          {filteredTickets.map((ticket) => (
             <tr
               key={ticket.id}
               className="border-t border-border hover:bg-muted/50 cursor-pointer"
@@ -241,7 +279,7 @@ export function TicketList({
               </td>
             </tr>
           ))}
-          {tickets.length === 0 && (
+          {filteredTickets.length === 0 && (
             <tr>
               <td colSpan={6} className="py-8 text-center text-muted-foreground">
                 No tickets found
