@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { TicketChat } from "@/components/dashboard/tickets/ticket-chat";
 import { AssigneeSelector } from "@/components/dashboard/tickets/assignee-selector";
+import { StatusControl } from "@/components/dashboard/tickets/status-control";
 
 export default async function TicketPage({ 
   params 
@@ -96,12 +97,11 @@ export default async function TicketPage({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-foreground">{ticket.title}</h1>
-        <Badge 
-          variant={ticket.status === 'OPEN' ? 'default' : 'secondary'}
-          className="text-sm"
-        >
-          {ticket.status}
-        </Badge>
+        <StatusControl 
+          ticketId={ticket.id}
+          currentStatus={ticket.status}
+          userRole={userProfile?.role}
+        />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
