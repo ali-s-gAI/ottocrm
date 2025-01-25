@@ -41,6 +41,7 @@ export const signUpAction = async (formData: FormData) => {
         {
           id: data.user.id,
           role,
+          email,
           full_name: email.split('@')[0], // Temporary name from email
         }
       ]);

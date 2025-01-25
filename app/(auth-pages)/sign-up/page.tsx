@@ -13,11 +13,14 @@ export default async function SignUpPage({ searchParams }: PageProps) {
   const params = await searchParams;
 
   return (
-    <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
+    <div className="w-full sm:max-w-md px-8">
       <form
-        className="animate-in flex-1 flex flex-col w-full justify-center gap-6 text-foreground"
+        className="animate-in flex flex-col w-full gap-6 text-foreground"
         action={signUpAction}
       >
+        <div className="text-center mb-4">
+          <h1 className="text-2xl font-semibold text-foreground">Sign Up</h1>
+        </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -43,7 +46,7 @@ export default async function SignUpPage({ searchParams }: PageProps) {
           <select
             id="role"
             name="role"
-            className="rounded-md px-4 py-2 bg-inherit border"
+            className="rounded-md px-4 py-2 bg-background border border-input"
             required
           >
             <option value="CUSTOMER">Customer</option>
