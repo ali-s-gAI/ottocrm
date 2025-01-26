@@ -1,7 +1,29 @@
+import { createClient } from "@/utils/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import Link from "next/link";
 
-export default function DocsPage() {
+export default async function DocsPage() {
+  const supabase = await createClient();
+
+  // Get user role for admin check
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', user?.id)
+    .single();
+
+  const isAdmin = profile?.role === 'ADMIN';
+
+  // Fetch documentation from Supabase
+  const { data: docs } = await supabase
+    .from('documentation')
+    .select('*')
+    .order('created_at', { ascending: false });
+
   const faqs = [
     {
       question: "How do I create a new ticket?",
@@ -12,40 +34,28 @@ export default function DocsPage() {
       answer: "You can view all your tickets by clicking on 'Tickets' in the sidebar. Each ticket will show its current status (Open, In Progress, Resolved, or Closed). Click on any ticket to view more details."
     },
     {
-      question: "What do the different ticket priorities mean?",
-      answer: "Tickets can be set to three priority levels: High (urgent issues requiring immediate attention), Medium (standard issues), and Low (minor issues or general inquiries)."
-    },
-    {
       question: "How do I update my profile information?",
-      answer: "Click on 'Settings' in the sidebar to access your profile settings. Here you can update your name and other profile information."
-    }
-  ];
-
-  const guides = [
-    {
-      title: "Getting Started",
-      description: "Learn the basics of using OttoCRM",
-      content: "Welcome to OttoCRM! This guide will help you get started with our platform. OttoCRM is designed to streamline customer support interactions and make ticket management efficient and straightforward."
-    },
-    {
-      title: "Ticket Management",
-      description: "Learn how to effectively manage support tickets",
-      content: "Tickets are the core of OttoCRM. They help track customer inquiries, bug reports, and feature requests. Each ticket can be assigned a priority level and status, and can be assigned to specific support agents."
-    },
-    {
-      title: "Best Practices",
-      description: "Tips for effective customer support",
-      content: "Providing excellent customer support requires clear communication, prompt responses, and proper ticket management. Always provide detailed responses and keep tickets updated with the latest status."
+      answer: "Click on 'Settings' in the sidebar to access your profile settings. Here you can update your name, email, and other profile information."
     }
   ];
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Documentation & FAQ</h1>
-        <p className="text-muted-foreground mt-2">
-          Find answers to common questions and learn how to use OttoCRM effectively.
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Documentation & FAQ</h1>
+          <p className="text-muted-foreground mt-2">
+            Find answers to common questions and learn how to use OttoCRM effectively.
+          </p>
+        </div>
+        {isAdmin && (
+          <Link href="/dashboard/docs/new">
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              New Document
+            </Button>
+          </Link>
+        )}
       </div>
 
       <div className="grid gap-6">
@@ -53,16 +63,18 @@ export default function DocsPage() {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-foreground">Documentation</h2>
           <div className="grid gap-6 md:grid-cols-2">
-            {guides.map((guide) => (
-              <Card key={guide.title}>
-                <CardHeader>
-                  <CardTitle>{guide.title}</CardTitle>
-                  <CardDescription>{guide.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">{guide.content}</p>
-                </CardContent>
-              </Card>
+            {(docs || []).map((doc) => (
+              <Link key={doc.id} href={`/dashboard/docs/${doc.id}`}>
+                <Card className="hover:border-primary/50 transition-colors">
+                  <CardHeader>
+                    <CardTitle>{doc.title}</CardTitle>
+                    <CardDescription>{doc.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground line-clamp-3">{doc.content}</p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
