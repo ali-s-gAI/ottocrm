@@ -1,12 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { formatDistanceToNow } from "date-fns";
-import { TicketChat } from "@/components/dashboard/tickets/ticket-chat";
-import { AssigneeSelector } from "@/components/dashboard/tickets/assignee-selector";
-import { StatusControl } from "@/components/dashboard/tickets/status-control";
-import { PrioritySelector } from "@/components/dashboard/tickets/priority-selector";
+import { TicketDetails } from "@/components/dashboard/tickets/ticket-details";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -95,77 +89,12 @@ export default async function TicketPage({ params }: PageProps) {
   const isStaff = userProfile?.role === 'ADMIN' || userProfile?.role === 'AGENT';
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-foreground">{ticket.title}</h1>
-        <StatusControl 
-          ticketId={ticket.id}
-          currentStatus={ticket.status}
-          userRole={userProfile?.role}
-        />
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {isStaff && (
-              <div>
-                <div className="text-sm text-muted-foreground">Priority</div>
-                <div className="font-medium">
-                  <PrioritySelector
-                    ticketId={ticket.id}
-                    currentPriority={ticket.priority}
-                    isStaff={isStaff}
-                  />
-                </div>
-              </div>
-            )}
-            <div>
-              <div className="text-sm text-muted-foreground">Created By</div>
-              <div className="font-medium">
-                {ticket.created_by_profile.full_name}
-              </div>
-            </div>
-            <div>
-              <div className="text-sm text-muted-foreground">Assigned To</div>
-              <div className="font-medium">
-                <AssigneeSelector
-                  ticketId={ticket.id}
-                  currentAssigneeId={ticket.assigned_to}
-                  currentAssigneeName={ticket.assigned_to_profile?.full_name}
-                  isAdmin={isAdmin}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="text-sm text-muted-foreground">Created</div>
-              <div className="font-medium">
-                {formatDistanceToNow(new Date(ticket.created_at), { addSuffix: true })}
-              </div>
-            </div>
-            <div>
-              <div className="text-sm text-muted-foreground">Description</div>
-              <div className="font-medium whitespace-pre-wrap">{ticket.description}</div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Updates & Chat</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <TicketChat 
-              ticketId={ticket.id} 
-              currentUser={user}
-              userRole={userProfile?.role}
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <TicketDetails
+      initialTicket={ticket}
+      currentUser={user}
+      userRole={userProfile?.role || ''}
+      isAdmin={isAdmin}
+      isStaff={isStaff}
+    />
   );
 }

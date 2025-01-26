@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 interface StatusControlProps {
   ticketId: string;
   currentStatus: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
-  userRole: 'ADMIN' | 'AGENT' | 'CUSTOMER';
+  userRole?: 'ADMIN' | 'AGENT' | 'CUSTOMER' | '';
   onStatusChange?: (newStatus: string) => void;
 }
 
