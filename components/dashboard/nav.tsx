@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Home, Inbox, Users, Settings } from "lucide-react";
+import { Home, Inbox, Users, Settings, BookOpen } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 
 export default async function DashboardNav() {
@@ -43,6 +43,9 @@ export default async function DashboardNav() {
             Customers
           </NavItem>
         )}
+        <NavItem href="/dashboard/docs" icon={<BookOpen size={20} />}>
+          Docs & FAQ
+        </NavItem>
         <NavItem href="/dashboard/settings" icon={<Settings size={20} />}>
           Settings
         </NavItem>
