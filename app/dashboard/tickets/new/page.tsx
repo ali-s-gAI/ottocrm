@@ -36,7 +36,7 @@ export default async function NewTicketPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-white">Create New Ticket</h1>
+      <h1 className="text-2xl font-bold text-foreground">Create New Ticket</h1>
       <NewTicketForm agents={agentsWithCounts} />
     </div>
   );

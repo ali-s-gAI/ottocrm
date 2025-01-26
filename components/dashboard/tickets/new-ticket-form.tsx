@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 type Agent = {
   id: string;
@@ -95,18 +96,17 @@ export function NewTicketForm({ agents }: { agents: Agent[] }) {
           id="title"
           name="title"
           required
-          className="bg-[#242424] border-[#333333] text-white"
         />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <textarea
+        <Textarea
           id="description"
           name="description"
           required
           rows={4}
-          className="w-full rounded-md bg-[#242424] border-[#333333] text-white p-2"
+          className="w-full"
         />
       </div>
 
@@ -117,13 +117,13 @@ export function NewTicketForm({ agents }: { agents: Agent[] }) {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className={`w-full justify-between bg-[#242424] border-[#333333] ${priorityColors[selectedPriority]}`}
+                className={`w-full justify-between ${priorityColors[selectedPriority]}`}
               >
                 {selectedPriority}
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-full min-w-[8rem] bg-[#242424] border-[#333333]">
+            <DropdownMenuContent className="w-full min-w-[8rem]">
               <DropdownMenuItem 
                 onClick={() => setSelectedPriority('LOW')}
                 className={`${priorityColors.LOW} focus:text-yellow-500 focus:bg-yellow-500/10`}
@@ -155,7 +155,7 @@ export function NewTicketForm({ agents }: { agents: Agent[] }) {
           <select
             id="assigned_to"
             name="assigned_to"
-            className="w-full rounded-md bg-[#242424] border-[#333333] text-white p-2"
+            className="w-full rounded-md bg-background border border-input p-2"
             disabled={agents.length === 0}
           >
             <option value="">Unassigned</option>
@@ -176,7 +176,7 @@ export function NewTicketForm({ agents }: { agents: Agent[] }) {
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-[#333333] hover:bg-[#444444]"
+        className="w-full"
       >
         {isSubmitting ? 'Creating...' : 'Create Ticket'}
       </Button>
